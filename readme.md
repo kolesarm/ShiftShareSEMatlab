@@ -1,7 +1,7 @@
 # BartikSEMatlab
 
 Confidence intervals in shift-share designs (also called [Bartik
-(1991)](http://research.upjohn.org/up_press/77/) designs ) using procedures from
+(1991)](http://research.upjohn.org/up_press/77/) designs) using procedures from
 [Adão, Kolesár, and Morales (2018)](https://arxiv.org/abs/1806.07928). See the
 [BartikSE](https://github.com/kolesarm/BartikSE) package for `R` version of this
 code.
@@ -10,7 +10,8 @@ code.
 
 ### `iv_shift_share_AKM.m`
 
-Implements the 2SLS and reports AKM and AKM0 Confidence Intervals.
+Implements the shift-share IV regression and reports AKM and AKM0 Confidence
+Intervals.
 
 ```
 [ hat_beta, SE, pvalue, CIl, CIu, CItype ] =
@@ -30,7 +31,7 @@ Implements the 2SLS and reports AKM and AKM0 Confidence Intervals.
   : shift-share IV
 
   `controls`
-  : control matrix -- vector of ones if empty
+  : control matrix---vector of ones if empty
 
   `ln`
   : matrix of shares used in shift-share regressor. Rows are regions and columns
@@ -41,7 +42,7 @@ Implements the 2SLS and reports AKM and AKM0 Confidence Intervals.
   : observation weights
 
   `sec_cluster_vec`
-  : vector of clusters -- no clustering if empty
+  : vector of clusters---no clustering if empty
 
   `alpha`
   : significance level for confidence interval
@@ -58,7 +59,7 @@ Implements the 2SLS and reports AKM and AKM0 Confidence Intervals.
   : length of CI
 
   `pvalue`
-  : p-value of the null hypothesis $H_0: beta = beta0$
+  : p-value of the null hypothesis H0: beta = beta0
 
   `CIl`
   : lower bound of CI
@@ -72,7 +73,8 @@ Implements the 2SLS and reports AKM and AKM0 Confidence Intervals.
 
 ### `ols_shift_share_AKM.m`
 
-Implements the OLS and reports AKM and AKM0 Confidence Intervals
+Implements the shift-share OLS regression and reports AKM and AKM0 Confidence
+Intervals
 
 ```
 [ hat_beta, SE, pvalue, CIl, CIu, CItype ] =
@@ -80,13 +82,14 @@ Implements the OLS and reports AKM and AKM0 Confidence Intervals
                         sec_cluster_vec, alpha, AKMtype, beta0)
 ```
 
-#### Description of arguments:
+#### Description of arguments
 
-All variables identical to 2SLS code, except that `Xn` is the shift-share regressor
+All variables identical to `iv_shift_share_AKM.m`, except that `Xn` is the
+shift-share regressor
 
-#### Description of Output:
+#### Description of Output
 
-Identical to 2SLS
+Identical to `iv_shift_share_AKM.m`
 
 ### ADHapplication.m
 
