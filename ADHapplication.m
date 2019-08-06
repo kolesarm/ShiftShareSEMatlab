@@ -1,17 +1,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Replication of ADH (2013)
-%Input: data_input_empADH, endog_var_czADH
-%Adao, Kolesar, Morales - 07/23/2018
+% Replication of ADH (2013)
+% Input: data_input_empADH, endog_var_czADH
+% Adao, Kolesar, Morales - 08/06/2019
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all; clc;
 
 %% Data Input
 load data_input_empADH;
-load endog_var_cz_ADH;
+load endog_var_cz_all;
 
 %% Preliminaries
-%Numerical parameters
+% Numerical parameters
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 T = 2; %n of period
 I = 722*2; % n of regions
@@ -35,12 +35,36 @@ share_emp_ind = [share_emp_ind1, zeros(size(share_emp_ind2)); zeros(size(share_e
 sec_vec = [sec_vec(:,1); sec_vec(:,1)];
 sec_vec3d = floor(sec_vec/10);
 
+
+%Adjust share matrix: Drop linearlly colinear columns
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ln = share_emp_ind;
+B = ln'*ln;
+tol = 1e-10;
+if ~nnz(B) %X has no non-zeros and hence no independent columns
+    shock_ind=[];
+    return
+end
+[Q, R, E] = qr(B,0);
+if ~isvector(R)
+    diagr = abs(diag(R));
+else
+    diagr = R(1);
+end
+%Rank estimation
+r = find(diagr >= tol*diagr(1), 1, 'last'); %rank estimation
+shock_ind=sort(E(1:r));
+clearvars Q R E B diagr
+
+share_emp_ind = ln(:, shock_ind);
+sec_vec = sec_vec(shock_ind');
+sec_vec3d = sec_vec3d(shock_ind');
+
 %% Estimation
 
 % First-Stage
 [ hat_beta(1,1), SE(1,1), pvalue(1,1), CIl(1,1), CIu(1,1), CIt(1,1) ] = ols_shift_share_AKM( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
 [ hat_beta(2,1), SE(2,1), pvalue(2,1), CIl(2,1), CIu(2,1), CIt(2,1) ] = ols_shift_share_AKM( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
-
 
 %Reduced-Form
 [ hat_beta(1,2), SE(1,2), pvalue(1,2), CIl(1,2), CIu(1,2), CIt(1,2) ] = ols_shift_share_AKM( d_sh_empl_mfg, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );

@@ -14,9 +14,9 @@ Implements the shift-share IV regression and reports AKM and AKM0 Confidence
 Intervals.
 
 ```
-[ hat_beta, SE, pvalue, CIl, CIu, CItype ] =
+[hat_beta, SE, pvalue, CIl, CIu, CItype] =
     iv_shift_share_AKM(Yn, Xn, Zn, controls, ln, weight,
-                       sec_cluster_vec, alpha, AKMtype, beta0)
+                       cluster_vec, alpha, AKMtype, beta0)
 ```
 
 #### Description of arguments
@@ -35,13 +35,13 @@ Intervals.
 
   `ln`
   : matrix of shares used in shift-share regressor. Rows are regions and columns
-    are vectors. Notice that, for each row, the sum of columns must be less or
-    equal to 1. If less than one, input residual sector without shock.
+    are vectors. Notice that, for each row, the sum of columns must be less than
+    or equal to 1 This matrix must have linearly independent columns.
 
   `weight`
   : observation weights
 
-  `sec_cluster_vec`
+  `cluster_vec`
   : vector of clusters---no clustering if empty
 
   `alpha`
@@ -49,6 +49,9 @@ Intervals.
 
   `AKMtype`
   : 1 for AKM and 0 for AKM0
+
+  `beta0`
+  : null hypothesis
 
 #### Description of output
 
@@ -77,7 +80,7 @@ Implements the shift-share OLS regression and reports AKM and AKM0 Confidence
 Intervals
 
 ```
-[ hat_beta, SE, pvalue, CIl, CIu, CItype ] =
+[hat_beta, SE, pvalue, CIl, CIu, CItype] =
     ols_shift_share_AKM(Yn, Xn, controls, ln, weight,
                         sec_cluster_vec, alpha, AKMtype, beta0)
 ```
@@ -93,5 +96,5 @@ Identical to `iv_shift_share_AKM.m`
 
 ### ADHapplication.m
 
-Example to implement the code to generate the results in Column (2) of Table 6
+Example to implement the code to generate the results in Column (2) of Table 5
 in the paper. Uses the data `data_input_empADH.mat` and `endog_var_cz_ADH.mat`.
