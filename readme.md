@@ -1,14 +1,14 @@
-# BartikSEMatlab
+# ShiftShareSEMatlab
 
 Confidence intervals in shift-share designs (also called [Bartik
 (1991)](http://research.upjohn.org/up_press/77/) designs) using procedures from
 [Adão, Kolesár, and Morales (2018)](https://arxiv.org/abs/1806.07928). See the
-[BartikSE](https://github.com/kolesarm/BartikSE) package for `R` version of this
+[ShiftShareSE](https://github.com/kolesarm/ShiftShareSE) package for `R` version of this
 code.
 
 ## Code description
 
-### `iv_shift_share_AKM.m`
+### `ivres_ss.m`
 
 Implements the shift-share IV regression and reports AKM and AKM0 Confidence
 Intervals.

@@ -1,24 +1,23 @@
-function [ hat_beta, SE, pvalue, CIl, CIu, CItype ] = iv_shift_share_AKM( Yn, Xn, Zn, controls, ln, weight, sec_cluster_vec, alpha, AKMtype, beta0 )
+function [hat_beta, SE, pvalue, CIl, CIu, CItype] = reg_ss(Yn, Xn, controls, ln, weight, sec_cluster_vec, alpha, AKMtype, beta0)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%AKM Inference - 2SLS
-%Adao, Kolesar, Morales - 07/23/2018
-%Updated on 08/01/2019
+% AKM Inference - OLS
+% Adao, Kolesar, Morales - 07/23/2018
+% Updated on 08/01/2019
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Description of arguments
-%Yn: dependent variable
-%Xn: endogenous regressor
-%Zn: shift-share IV
-%controls: Control matrix -- vector of ones if empty
-%ln: matrix of shares used in shift-share regressor
-%weight: observation weights
-%sec_cluster_vec: vector of clusters -- no clustering if empty
-%alpha: significance level for confidence interval
-%AKMtype: 1 for AKM and 0 for AKM0
+%% Description of arguments
+% Yn: dependent variable
+% Xn: shift-share regressor
+% controls: Control matrix -- vector of ones if empty
+% ln: matrix of shares used in shift-share regressor
+% weight: observation weights
+% sec_cluster_vec: vector of clusters -- no clustering if empty
+% alpha: significance level for confidence interval
+% AKMtype: 1 for AKM and 0 for AKM0
 
-%Description of Output
-% hat_beta: estimated coefficient on endogenous regressor
+% Description of Output
+% hat_beta: estimated coefficient on shift-share regressor
 % SE: length of CI
 % pvalue: p-value of H0: beta = beta0
 % CIl: lower bound of CI
@@ -30,8 +29,6 @@ function [ hat_beta, SE, pvalue, CIl, CIu, CItype ] = iv_shift_share_AKM( Yn, Xn
 %   3 - nonstandard AKM0 = [-Inf,Inf]
 
 %% Preliminearies
-global S K obs
-
 critical = norminv(1 - alpha/2,0,1);
 
 if isempty(beta0) == 1
@@ -44,7 +41,8 @@ end
 [obs K] = size(controls);
 K = K+1;
 
-% Adjust share matrix: Drop linearlly colinear columns
+% Check for colinearity of share matrix
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 B = ln'*ln;
 tol = 1e-10;
 if ~nnz(B) %X has no non-zeros and hence no independent columns
@@ -57,6 +55,7 @@ if ~isvector(R)
 else
     diagr = R(1);
 end
+
 %Rank estimation
 r = find(diagr >= tol*diagr(1), 1, 'last'); %rank estimation
 shock_ind=sort(E(1:r));
@@ -72,20 +71,14 @@ end
 
 %Define variables for estimation
 [obs S] = size(ln);
-Mn = [controls, Zn].*( repmat(sqrt(weight),1,K) );   %Matrix of IVs
-Gn = [controls, Xn].*( repmat(sqrt(weight),1,K) );   %Matrix of regressors
+Mn = [controls, Xn].*( repmat(sqrt(weight),1,K) );   %Matrix of regressors
 ln = ln.*( repmat(sqrt(weight),1,S) );               %Matrix of Shares
 tildeYn = Yn.*(sqrt(weight));                        %Dependent Variable
 
-
 %% OLS estimates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-P1 = Mn'*Gn;
-P2 = (Mn'*Mn)^(-1);
-P3 = Mn'*tildeYn;
-hat_theta = ((P1'*P2*P1)^(-1))*(P1'*P2*P3);
-
-e = tildeYn - Gn*hat_theta;
+hat_theta = ((Mn'*Mn)^(-1))*(Mn'*tildeYn);
+e = tildeYn - Mn*hat_theta;
 hat_beta = hat_theta(end);
 
 %Auxiliary variables
@@ -93,16 +86,11 @@ hat_beta = hat_theta(end);
 tildeZn = Mn(:,1:end-1);
 tildeXn = Mn(:,end);
 
-A = tildeZn*(tildeZn'*tildeZn)^(-1);
-Xdd = tildeXn - A*(tildeZn'*tildeXn);
+A = tildeZn*((tildeZn'*tildeZn)^(-1));
 Ydd = tildeYn - A*(tildeZn'*tildeYn);
-Gdd = Gn(:,end) - A*(tildeZn'*Gn(:,end));
+Xdd = tildeXn - A*(tildeZn'*tildeXn);
 Xddd = ((ln'*ln)^(-1))*(ln'*Xdd);
 
-%First stage coefficient
-hat_thetaFS = ((Mn'*Mn)^(-1))*(Mn'*Gdd);
-hatpi = hat_thetaFS(end);
-%e_AKM = Ydd - hat_beta*Gdd;
 
 %% Compute SEs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -129,7 +117,7 @@ switch AKMtype
         end
 
         %Variance matrix
-        var = (1/hatpi(end)^2)*((Xdd'*Xdd)^(-1))*LambdaAKM*((Xdd'*Xdd)^(-1));
+        var = ((Xdd'*Xdd)^(-1))*LambdaAKM*((Xdd'*Xdd)^(-1));
         SE = diag(var.^(1/2));
 
         %Confidence Interval
@@ -145,7 +133,7 @@ switch AKMtype
         disp([hat_beta, SE, pvalue, CIl, CIu, CItype])
     case 0
         %% AKM0
-        e_null = Ydd - Gdd*beta0;
+        e_null = Ydd - Xdd*beta0;
 
         if isempty(sec_cluster_vec) == 1
             R = ( e_null'*ln ).^2;
@@ -166,7 +154,7 @@ switch AKMtype
         end
 
         %Variance matrix
-        var = (1/hatpi(end)^2)*((Xdd'*Xdd)^(-1))*LambdaAKM*((Xdd'*Xdd)^(-1));
+        var = ((Xdd'*Xdd)^(-1))*LambdaAKM*((Xdd'*Xdd)^(-1));
         SE_AKMnull_n = diag(var.^(1/2));
 
         %pvalue
@@ -176,17 +164,15 @@ switch AKMtype
         %Confidence Interval
         critical2 = critical^2;
         RY = Xdd'*Ydd;
-        RX = Xdd'*Gdd;
+        RX = Xdd'*Xdd;
 
         if isempty(sec_cluster_vec) == 1
-
             lnY =  Ydd'*ln ;
-            lnX =  Gdd'*ln ;
+            lnX =  Xdd'*ln ;
 
             SXY = (lnY.*lnX)*( Xddd.^2 );
             SXX = (lnX.*lnX)*( Xddd.^2 );
             SYY = (lnY.*lnY)*( Xddd.^2 );
-
         else
             cluster_g = unique(sec_cluster_vec);
             Nc = length(cluster_g);
@@ -199,7 +185,9 @@ switch AKMtype
                 XdddCluster = Xddd(sec_cluster_vec==cluster_g(c));
 
                 lnYCluster = (( Ydd'*lnCluster  )').*XdddCluster;
-                lnXCluster = (( Gdd'*lnCluster  )').*XdddCluster;
+                lnXCluster = (( Xdd'*lnCluster  )').*XdddCluster;
+
+                LambdaAKM_cluster(c) = sum(sum(RXCluster*RXCluster'));
 
                 SXY_cluster(c) = sum(sum(lnYCluster*lnXCluster'));
                 SXX_cluster(c) = sum(sum(lnXCluster*lnXCluster'));
