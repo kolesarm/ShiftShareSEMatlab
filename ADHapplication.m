@@ -63,13 +63,13 @@ sec_vec3d = sec_vec3d(shock_ind');
 %% Estimation
 
 % First-Stage
-[ hat_beta(1,1), SE(1,1), pvalue(1,1), CIl(1,1), CIu(1,1), CIt(1,1) ] = ols_shift_share_AKM( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
-[ hat_beta(2,1), SE(2,1), pvalue(2,1), CIl(2,1), CIu(2,1), CIt(2,1) ] = ols_shift_share_AKM( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
+[ hat_beta(1,1), SE(1,1), pvalue(1,1), CIl(1,1), CIu(1,1), CIt(1,1) ] = reg_ss( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
+[ hat_beta(2,1), SE(2,1), pvalue(2,1), CIl(2,1), CIu(2,1), CIt(2,1) ] = reg_ss( d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
 
 %Reduced-Form
-[ hat_beta(1,2), SE(1,2), pvalue(1,2), CIl(1,2), CIu(1,2), CIt(1,2) ] = ols_shift_share_AKM( d_sh_empl_mfg, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
-[ hat_beta(2,2), SE(2,2), pvalue(2,2), CIl(2,2), CIu(2,2), CIt(2,2) ] = ols_shift_share_AKM( d_sh_empl_mfg, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
+[ hat_beta(1,2), SE(1,2), pvalue(1,2), CIl(1,2), CIu(1,2), CIt(1,2) ] = reg_ss( d_sh_empl_mfg, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
+[ hat_beta(2,2), SE(2,2), pvalue(2,2), CIl(2,2), CIu(2,2), CIt(2,2) ] = reg_ss( d_sh_empl_mfg, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
 
 %2SLS
-[ hat_beta(1,3), SE(1,3), pvalue(1,3), CIl(1,3), CIu(1,3), CIt(1,3) ] = iv_shift_share_AKM( d_sh_empl_mfg, d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
-[ hat_beta(2,3), SE(2,3), pvalue(2,3), CIl(2,3), CIu(2,3), CIt(2,3) ] = iv_shift_share_AKM( d_sh_empl_mfg, d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );
+[ hat_beta(1,3), SE(1,3), pvalue(1,3), CIl(1,3), CIu(1,3), CIt(1,3) ] = ivreg_ss( d_sh_empl_mfg, d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 1, [] );
+[ hat_beta(2,3), SE(2,3), pvalue(2,3), CIl(2,3), CIu(2,3), CIt(2,3) ] = ivreg_ss( d_sh_empl_mfg, d_tradeusch_pw, d_tradeotch_pw_lag, controls, share_emp_ind, weight, sec_vec3d, alpha, 0, [] );

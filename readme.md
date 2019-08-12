@@ -8,14 +8,14 @@ code.
 
 ## Code description
 
-### `ivres_ss.m`
+### `ivreg_ss.m`
 
 Implements the shift-share IV regression and reports AKM and AKM0 Confidence
 Intervals.
 
 ```
 [hat_beta, SE, pvalue, CIl, CIu, CItype] =
-    iv_shift_share_AKM(Yn, Xn, Zn, controls, ln, weight,
+    ivreg_ss(Yn, Xn, Zn, controls, ln, weight,
                        cluster_vec, alpha, AKMtype, beta0)
 ```
 
@@ -74,25 +74,25 @@ Intervals.
   : 0 - AKM, 1 - standard AKM0, 2 - nonstandard AKM0 of the form
     `[-Inf,CIl]` U  `[CIu,Inf]`, 3 - nonstandard AKM0 of the form `[-Inf,Inf]`
 
-### `ols_shift_share_AKM.m`
+### `reg_ss.m`
 
 Implements the shift-share OLS regression and reports AKM and AKM0 Confidence
 Intervals
 
 ```
 [hat_beta, SE, pvalue, CIl, CIu, CItype] =
-    ols_shift_share_AKM(Yn, Xn, controls, ln, weight,
+    reg_ss(Yn, Xn, controls, ln, weight,
                         sec_cluster_vec, alpha, AKMtype, beta0)
 ```
 
 #### Description of arguments
 
-All variables identical to `iv_shift_share_AKM.m`, except that `Xn` is the
+All variables identical to `ivreg_ss.m`, except that `Xn` is the
 shift-share regressor
 
 #### Description of Output
 
-Identical to `iv_shift_share_AKM.m`
+Identical to `ivreg_ss.m`
 
 ### ADHapplication.m
 
