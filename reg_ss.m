@@ -65,12 +65,19 @@ ln_check = ln(:, shock_ind);
 colinear = (size(ln_check) == size(ln));
 if sum(colinear) < 2
     disp('Share matrix has colinear columns')
-    hat_beta =0; SE =0; pvalue=0; CIl=0; CIu=0; CItype=0;
+    hat_beta=0; SE=0; pvalue=0; CIl=0; CIu=0; CItype=0;
     return
 end
 
-%Define variables for estimation
 [obs S] = size(ln);
+%% Check dimensionality of cluster vector
+if S ~= length(sec_cluster_vec)
+   disp('Dimension of cluster factor and share matrix are not consistent')
+   hat_beta=0; SE=0; pvalue=0; CIl=0; CIu=0; CItype=0;
+   return
+end
+
+%% Define variables for estimation
 Mn = [controls, Xn].*( repmat(sqrt(weight),1,K) );   %Matrix of regressors
 ln = ln.*( repmat(sqrt(weight),1,S) );               %Matrix of Shares
 tildeYn = Yn.*(sqrt(weight));                        %Dependent Variable
