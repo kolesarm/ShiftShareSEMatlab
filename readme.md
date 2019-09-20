@@ -3,8 +3,10 @@
 Confidence intervals in shift-share designs (also called [Bartik
 (1991)](http://research.upjohn.org/up_press/77/) designs) using procedures from
 [Adão, Kolesár, and Morales (2018)](https://arxiv.org/abs/1806.07928). See the
-[ShiftShareSE](https://github.com/kolesarm/ShiftShareSE) package for `R` version of this
-code.
+[ShiftShareSE](https://github.com/kolesarm/ShiftShareSE) package for R version
+of this code, and the
+[ShiftShareSEStata](https://github.com/zhangxiang0822/ShiftShareSEStata) package
+for a Stata version.
 
 ## Code description
 
