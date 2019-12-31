@@ -1,8 +1,9 @@
 # ShiftShareSEMatlab
 
-Confidence intervals in shift-share designs (also called [Bartik
-(1991)](http://research.upjohn.org/up_press/77/) designs) using procedures from
-[Adão, Kolesár, and Morales (2019)](https://doi.org/10.1093/qje/qjz025). See the
+This Matlab package implements confidence intervals in shift-share designs (also
+called [Bartik (1991)](http://research.upjohn.org/up_press/77/) designs) using
+the `AKM` and `AKM0` procedures from [Adão, Kolesár, and Morales
+(2019)](https://doi.org/10.1093/qje/qjz025). See the
 [ShiftShareSE](https://github.com/kolesarm/ShiftShareSE) package for R version
 of this code, and the
 [ShiftShareSEStata](https://github.com/zhangxiang0822/ShiftShareSEStata) package
@@ -23,37 +24,41 @@ Intervals.
 
 #### Description of arguments
 
-  `Yn`
-  : dependent variable
+`Yn`
+  : Dependent variable. A vector with each row corresponding to a region.
 
-  `Xn`
-  : endogenous regressor
+`Xn`
+  : Endogenous regressor. A vector with each row corresponding to a region.
 
-  `Zn`
-  : shift-share IV
+`Zn`
+  : Shift-share IV. A vector with each row corresponding to a region.
 
-  `controls`
-  : control matrix---vector of ones if empty
+`controls`
+  : Control matrix. A Matrix with each row corresponding to a region and each
+    column to a control variable. A vector of ones if empty.
 
-  `ln`
-  : matrix of shares used in shift-share regressor. Rows are regions and columns
-    are vectors. Notice that, for each row, the sum of columns must be less than
-    or equal to 1 This matrix must have linearly independent columns.
+`ln`
+: Matrix of shares used in shift-share regressor. Rows are regions and columns
+    are vectors. For each row, the sum of columns should be less than or equal
+    to 1. This matrix must have linearly independent columns. The ordering of
+    regions in rows must coincide with that in `Yn`, `Xn`, `Zn`. The ordering of
+    sectors in columns is irrelevant but the identity of the sectors in `ln`
+    must coincide with those used to construct `Zn`.
 
-  `weight`
-  : observation weights
+`weight`
+  : observation weights. A vector with each row corresponding to a region.
 
-  `cluster_vec`
+`cluster_vec`
   : vector of clusters---no clustering if empty
 
-  `alpha`
+`alpha`
   : significance level for confidence interval
 
-  `AKMtype`
+`AKMtype`
   : 1 for AKM and 0 for AKM0
 
-  `beta0`
-  : null hypothesis
+`beta0`
+  : null hypothesis. By default `beta0=0` if empty.
 
 #### Description of output
 
